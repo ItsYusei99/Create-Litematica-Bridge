@@ -1,0 +1,9 @@
+.gradle/
+build/
+out/
+*.class
+# Third-party mod jars (see README, not redistributed)
+libs/*.jar
+# Gradle wrapper binaries (if added later)
+!gradle/wrapper/gradle-wrapper.jar
+runs/

@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.gradle.userdev' version '7.0.192'
+}
+
+version = '2.0.0'
+group = 'com.itsyusei.l2c'
+
+base {
+    archivesName = 'litematica2create'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+runs {
+    client {
+        systemProperty 'forge.logging.console.level', 'debug'
+        modSource project.sourceSets.main
+    }
+}
+
+dependencies {
+    implementation 'net.neoforged:neoforge:21.1.249'
+    // Third-party mod jars must be placed in the libs/ folder
+    // (see README). They are NOT redistributed with this repository.
+    implementation files('libs/forgematica-0.4.1+mc1.21.1.jar')
+    implementation files('libs/create-1.21.1-6.0.10.jar')
+    compileOnly files('libs/mafglib-0.4.3+mc1.21.1.jar')
+}
