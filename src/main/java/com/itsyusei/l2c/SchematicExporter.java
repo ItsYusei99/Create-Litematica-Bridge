@@ -8,7 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -58,6 +60,7 @@ public final class SchematicExporter {
             StructureTemplate template = new StructureTemplate();
             template.fillFromWorld(world, min, size, false, Blocks.STRUCTURE_VOID);
             CompoundTag nbt = template.save(new CompoundTag());
+            stripIgnored(nbt, IgnoreList.load());
             File dir = new File(mc.gameDirectory, "schematics");
             if (!dir.isDirectory() && !dir.mkdirs()) {
                 tell(mc, Component.literal("§c[L2C] Could not create schematics folder"));
@@ -69,12 +72,60 @@ public final class SchematicExporter {
             }
             File out = new File(dir, safe + ".nbt");
             NbtIo.writeCompressed(nbt, out.toPath());
+            BlockPos origin = placement.getOrigin();
             tell(mc, Component.literal("§a[L2C] Exported schematics/" + out.getName()
                     + " (" + size.getX() + "x" + size.getY() + "x" + size.getZ()
-                    + "). Load it in the Schematic Table."));
+                    + "). Origin: " + origin.getX() + ", " + origin.getY() + ", " + origin.getZ()
+                    + ". Load it in the Schematic Table."));
         } catch (Exception e) {
             tell(mc, Component.literal("§c[L2C] Export failed: " + e.getMessage()));
         }
+    }
+
+    /**
+     * Removes blocks whose palette id is in the ignore list, then prunes the
+     * palette and reindexes. Operates on a vanilla structure tag in place.
+     */
+    static void stripIgnored(CompoundTag nbt, java.util.Set<String> ids) {
+        if (ids.isEmpty() || !nbt.contains("palette") || !nbt.contains("blocks")) {
+            return;
+        }
+        ListTag palette = nbt.getList("palette", Tag.TAG_COMPOUND);
+        boolean[] drop = new boolean[palette.size()];
+        boolean any = false;
+        for (int i = 0; i < palette.size(); i++) {
+            String name = palette.getCompound(i).getString("Name");
+            if (IgnoreList.isIgnoredPaletteName(name, ids)) {
+                drop[i] = true;
+                any = true;
+            }
+        }
+        if (!any) {
+            return;
+        }
+        int[] remap = new int[palette.size()];
+        ListTag newPalette = new ListTag();
+        for (int i = 0; i < palette.size(); i++) {
+            if (drop[i]) {
+                remap[i] = -1;
+            } else {
+                remap[i] = newPalette.size();
+                newPalette.add(palette.get(i));
+            }
+        }
+        ListTag blocks = nbt.getList("blocks", Tag.TAG_COMPOUND);
+        ListTag newBlocks = new ListTag();
+        for (int i = 0; i < blocks.size(); i++) {
+            CompoundTag info = blocks.getCompound(i);
+            int oldState = info.getInt("state");
+            if (oldState < 0 || oldState >= remap.length || remap[oldState] < 0) {
+                continue;
+            }
+            info.putInt("state", remap[oldState]);
+            newBlocks.add(info);
+        }
+        nbt.put("palette", newPalette);
+        nbt.put("blocks", newBlocks);
     }
 
     private static void tell(Minecraft mc, Component message) {

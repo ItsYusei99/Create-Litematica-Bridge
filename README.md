@@ -19,7 +19,24 @@ the Stock keeper for ordering from your warehouse.
 Click **"Export schematic"** in the same placement screen (no server needed). This snapshots
 the placement into a vanilla `.nbt` file inside the `schematics/` folder
 (`<name>.nbt`), ready to load in the Schematic Table for the Schematicannon — no external
-converter required.
+converter required. The chat message includes the placement origin coordinates and size
+to help align the cannon.
+
+## Verify and reorder
+
+Click **"Verify → Clipboard"** (or `/l2create verify [<name>]`) to compare the placement
+against the built world and order a clipboard with only the missing or wrong blocks.
+
+## Ignore list
+
+Blocks/items listed in `config/l2create-ignore.txt` (one id per line) are skipped in
+clipboards, verify orders and schematic exports. Manage it with
+`/l2create ignore list|add <id>|remove <id>`.
+
+## Batch processing
+
+`/l2create all` sends clipboard orders and exports schematics for every loaded placement.
+`/l2create export [<name>]` exports a single placement without opening its screen.
 
 The mod is split by necessity: the material list only exists on the client (Litematica),
 while only the server can give you items. A single jar works on both sides.
