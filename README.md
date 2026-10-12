@@ -1,4 +1,4 @@
-# Litematica2Create
+# Create: Litematica Bridge
 
 Sends Litematica (Forgematica) placement material lists to the server, which hands you a
 Create clipboard — identical to the one printed by the Schematicannon — ready to hand to
@@ -13,6 +13,13 @@ the Stock keeper for ordering from your warehouse.
 3. The server builds a Create clipboard (WRITTEN type, 7 entries per page, total amounts)
    and puts it in your inventory.
 4. Hand the clipboard to the Stock keeper to order everything from your logistics network.
+
+## Exporting to the Schematicannon
+
+Click **"Export schematic"** in the same placement screen (no server needed). This snapshots
+the placement into a vanilla `.nbt` file inside the `schematics/` folder
+(`<name>.nbt`), ready to load in the Schematic Table for the Schematicannon — no external
+converter required.
 
 The mod is split by necessity: the material list only exists on the client (Litematica),
 while only the server can give you items. A single jar works on both sides.

@@ -29,6 +29,7 @@ import java.util.Set;
 @OnlyIn(Dist.CLIENT)
 public class ClientEvents {
     private static final String CLIPBOARD_BUTTON_TEXT = "Materials \u2192 Clipboard";
+    private static final String EXPORT_BUTTON_TEXT = "Export schematic";
     private static final Set<String> PENDING = new HashSet<>();
 
     @SubscribeEvent
@@ -44,6 +45,10 @@ public class ClientEvents {
             ButtonGeneric button = new ButtonGeneric(sw - 178, 4, 174, 20, CLIPBOARD_BUTTON_TEXT,
                     "Ask the server for a clipboard with this placement's materials");
             ((GuiBase) placementScreen).addButton(button, listener);
+            IButtonActionListener exportListener = (btn, mouseButton) -> SchematicExporter.exportPlacement(placement);
+            ButtonGeneric exportButton = new ButtonGeneric(sw - 178, 26, 174, 20, EXPORT_BUTTON_TEXT,
+                    "Save this placement as a vanilla .nbt schematic for the Schematic Table");
+            ((GuiBase) placementScreen).addButton(exportButton, exportListener);
         }
     }
 

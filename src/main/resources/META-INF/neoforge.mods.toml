@@ -4,8 +4,8 @@ license="MIT"
 
 [[mods]]
 modId="litematica2create"
-version="2.0.0"
-displayName="Litematica2Create"
+version="2.1.0"
+displayName="Create: Litematica Bridge"
 authors="ItsYusei99"
 description='''
 Sends Litematica placement material lists to the server, which hands you a Create clipboard ready for the Stock keeper. Adds a "Materials -> Clipboard" button to the placement configuration screen and a /l2create client command. Requires Create; uses Forgematica on the client.
